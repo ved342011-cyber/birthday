@@ -252,7 +252,7 @@ html, body { height:100%; width:100%; overflow:hidden; font-family:'DM Sans', sa
 }
 #p3::after { content:''; position:absolute; inset:0; z-index:0; pointer-events:none; background-image:radial-gradient(circle, rgba(255,255,255,.5) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,.18) 1px, transparent 1px); background-size:46px 46px, 18px 18px; background-position:0 0, 9px 9px; }
 
-.cd-eye-bg { position:absolute; inset:0; z-index:1; background:url('photos/photo (32).jpeg') center/cover no-repeat; filter:blur(20px) brightness(.2) saturate(.5) sepia(.3); transform:scale(1.08); }
+.cd-eye-bg { position:absolute; inset:0; z-index:1; background:url(photo%20%2832%29.jpeg) center/cover no-repeat; filter:blur(20px) brightness(.2) saturate(.5) sepia(.3); transform:scale(1.08); }
 
 .starfield { position:absolute; inset:0; z-index:2; pointer-events:none; overflow:hidden; }
 .star { position:absolute; border-radius:50%; background:rgba(255,240,220,.9); animation:starTwinkle ease-in-out infinite; }
