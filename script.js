@@ -16,7 +16,7 @@ function tone(freq, dur, type='sine', vol=0.26) {
     g.gain.exponentialRampToValueAtTime(.001,t+dur);
     o.start(t); o.stop(t+dur);
 }
-const playChime  = () => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.42,'sine',.18),i*95));
+const playChime  = () => [523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.5),i*100));
 const playPop    = () => { tone(600,.12); setTimeout(()=>tone(300,.1),60); };
 const playIntro  = () => [523,587,659,698,784].forEach((f,i)=>setTimeout(()=>tone(f,.4,'sine',.12),i*275));
 const playLetter = () => [784,880,988,1047,1175].forEach((f,i)=>setTimeout(()=>tone(f,.65,'sine',.17),i*138));
@@ -32,9 +32,9 @@ function startAmbient(){
         o.connect(g); g.connect(audio.destination);
         o.type='triangle'; o.frequency.value=scale[pat[i++%pat.length]];
         const t=audio.currentTime;
-        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.026,t+.22);
+        g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.028,t+.22);
         g.gain.exponentialRampToValueAtTime(.001,t+1.5); o.start(t); o.stop(t+1.5);
-    },1100);
+    },750);
 }
 
 // ── INTRO ──────────────────────────────────────
@@ -48,7 +48,7 @@ function initIntro(){
         intro.style.opacity='0';
         setTimeout(()=>{
             intro.style.display='none';
-            document.body.dataset.page='p1'; showPage('p1');
+            showPage('p1');
             animateTitle();
             spawnP1Photos();
             spawnP1Stickers();
@@ -70,11 +70,7 @@ function showPage(id){
     document.querySelectorAll('.page').forEach(p=>{
         p.classList.remove('show'); p.style.opacity=''; p.style.pointerEvents='';
     });
-    const target=document.getElementById(id);
-    if(target){
-        target.classList.add('show');
-        document.body.dataset.page=id;
-    }
+    document.getElementById(id).classList.add('show');
 }
 function goTo(fromId, toId, onDone){
     eyeBlink(()=>{
@@ -87,19 +83,14 @@ function goTo(fromId, toId, onDone){
 
 // ── TITLE ANIMATION ────────────────────────────
 function animateTitle(){
-    const root=document.getElementById('mainTitle');
-    if(!root) return;
-    const parts=[...root.querySelectorAll('.title-main, .title-baby')];
-    parts.forEach((part,pIndex)=>{
-        const text=part.textContent;
-        part.textContent='';
-        [...text].forEach((ch,i)=>{
-            const s=document.createElement('span');
-            s.className='title-letter';
-            s.textContent=ch===' ' ? '\u00A0' : ch;
-            s.style.animationDelay=`${(pIndex*6 + i)*.06}s`;
-            part.appendChild(s);
-        });
+    const el=document.getElementById('mainTitle');
+    if(!el)return; el.innerHTML='';
+    [...'hey my bby 💗'].forEach((ch,i)=>{
+        const s=document.createElement('span');
+        s.className='title-letter';
+        s.textContent=ch===' '?'\u00A0':ch;
+        s.style.animationDelay=`${i*.065}s`;
+        el.appendChild(s);
     });
 }
 
@@ -168,7 +159,7 @@ function spawnP1Photos(){
         frame.style.cssText=`width:${fd.w}px;height:${fd.h}px;`;
 
         const img=document.createElement('img');
-        img.src=`photos/photo (${fd.n}).jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photos/photo%20%28${fd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.style.cssText=`width:${fd.w-8}px;height:${fd.h-8}px;object-fit:cover;display:block;`;
         img.onerror=()=>{ wrap.style.display='none'; };
 
@@ -246,7 +237,7 @@ function spawnP2Decor(){
         const card=document.createElement('div'); card.className='instax';
         card.style.cssText=`width:${pd.w}px;`;
         const img=document.createElement('img');
-        img.src=`photos/photo (${pd.n}).jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.onerror=()=>{ wrap.style.display='none'; };
         const cap=document.createElement('div'); cap.className='scap'; cap.textContent=pd.cap;
         card.append(img,cap); wrap.appendChild(card); page.appendChild(wrap);
@@ -277,7 +268,7 @@ function spawnP2Decor(){
 function buildStarfield(){
     const sf=document.getElementById('starfield');
     if(!sf||sf.dataset.built)return; sf.dataset.built='1';
-    for(let i=0;i<36;i++){
+    for(let i=0;i<55;i++){
         const s=document.createElement('div'); s.className='star';
         const sz=Math.random()*2.2+.4;
         Object.assign(s.style,{width:sz+'px',height:sz+'px',left:Math.random()*100+'%',top:Math.random()*100+'%',animationDuration:(Math.random()*3+2.5)+'s',animationDelay:(Math.random()*5)+'s'});
@@ -304,7 +295,7 @@ function buildCdPhotos(){
             const frame=document.createElement('div');
             frame.className='cd-film-frame';
             const img=document.createElement('img');
-            img.src=`photos/photo (${pd.n}).jpeg`; img.alt=''; img.loading='lazy';
+            img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
             img.style.cssText=`width:${h}px;height:${h}px;`;
             img.onerror=()=>{ frame.style.display='none'; };
             frame.appendChild(img); strip.appendChild(frame);
@@ -327,7 +318,7 @@ function spawnParticles(){
         el.textContent=chars[Math.floor(Math.random()*chars.length)];
         Object.assign(el.style,{position:'absolute',left:Math.random()*100+'%',top:Math.random()*100+'%',fontSize:(Math.random()*10+5)+'px',opacity:'0',pointerEvents:'none',willChange:'transform,opacity',animation:`pFlt ${Math.random()*2+2.2}s ease-in-out forwards`});
         wrap.appendChild(el); setTimeout(()=>el.remove(),4400);
-    },3600);
+    },2500);
 }
 
 function spawnHearts(){
@@ -337,7 +328,7 @@ function spawnHearts(){
         el.textContent=g[Math.floor(Math.random()*g.length)];
         Object.assign(el.style,{left:Math.random()*100+'%',bottom:'-40px',fontSize:(Math.random()*14+10)+'px',animationDuration:(Math.random()*2+4)+'s',willChange:'transform,opacity'});
         document.body.appendChild(el); setTimeout(()=>el.remove(),6200);
-    },5600);
+    },3000);
 }
 
 function spawnSparkles(){
@@ -349,7 +340,7 @@ function spawnSparkles(){
         el.textContent=c[Math.floor(Math.random()*c.length)];
         Object.assign(el.style,{left:Math.random()*100+'%',top:Math.random()*90+'%',fontSize:(Math.random()*10+5)+'px',animationDuration:(Math.random()*1.2+2)+'s',willChange:'transform,opacity'});
         layer.appendChild(el); setTimeout(()=>el.remove(),3200);
-    },3200);
+    },2000);
 }
 
 
@@ -358,30 +349,20 @@ function spawnSparkles(){
 ══════════════════════════════════════════════ */
 function startTyping(){
     const msgs=[
-        'wrapping your surprise in a little more love…',
-        'almost there, princess…',
-        'just a few more heartbeats and it is all yours 💗'
+        'good things take time… and this is very good ✨',
+        'loading all the love i have for you…',
+        'vedu is preparing something just for you 💗',
+        'almost there, hold on tight 🥺',
+        'this is made with every piece of my heart…',
     ];
     const el=document.getElementById('typeText');
     if(!el)return;
-    let mI=0,cI=0,del=false,stopped=false;
+    let mI=0,cI=0,del=false;
     function tick(){
-        if(stopped) return;
         const m=msgs[mI];
-        if(!del){
-            el.textContent=m.slice(0,++cI);
-            if(cI===m.length){
-                if(mI===msgs.length-1){
-                    stopped=true;
-                    return;
-                }
-                del=true; setTimeout(tick,1150); return;
-            }
-        } else {
-            el.textContent=m.slice(0,--cI);
-            if(cI===0){ del=false; mI=(mI+1)%msgs.length; }
-        }
-        setTimeout(tick,del?20:34);
+        if(!del){ el.textContent=m.slice(0,++cI); if(cI===m.length){del=true;setTimeout(tick,1850);return;} }
+        else     { el.textContent=m.slice(0,--cI); if(cI===0){del=false;mI=(mI+1)%msgs.length;} }
+        setTimeout(tick,del?28:44);
     }
     tick();
 }
@@ -415,20 +396,14 @@ function startCountdown(){
 /* ══════════════════════════════════════════════
    NO BUTTON
 ══════════════════════════════════════════════ */
-const noPhrases=[
-    'bby please say yes 😭💗',
-    'you know this is for youu 🥺',
-    'just one tiny yes? ✨',
-    'okay dramatic pause… but please? 💕',
-    'i made this with love, say yes 😌'
-];
+const noPhrases=['bby pleaseee say yes 😭💗','NOOO come back!! 😤💕','i made this with love... 🥺','okayy fiineee... jk PLEASE 😂❤️','one more try!! 👉👈✨','you know you want to 😏💗','i stayed up for this 😭🌙','please please please 🙏💗'];
 let noCount=0;
 document.getElementById('noBtn').addEventListener('click',()=>{
     playPop();
     const msg=document.getElementById('noMsg');
     msg.textContent=noPhrases[noCount++%noPhrases.length]; msg.style.opacity='1';
     const btn=document.getElementById('noBtn');
-    const mX=Math.min(window.innerWidth*.18,140), mY=Math.min(window.innerHeight*.16,95);
+    const mX=window.innerWidth*.36, mY=window.innerHeight*.3;
     btn.style.transition='transform .38s cubic-bezier(.34,1.56,.64,1)';
     btn.style.transform=`translate(${(Math.random()-.5)*mX}px,${(Math.random()-.5)*mY}px)`;
 });
@@ -500,14 +475,15 @@ const PHOTO_DATA=[
     {n:1, cap:'my princess 💗'},{n:5, cap:'so pretty 🌸'},{n:7, cap:'stunning ✨'},
     {n:10,cap:'gorgeous 💫'},{n:23,cap:'angel 🧿'},{n:14,cap:'beautiful 🌷'},
     {n:19,cap:'obsessed 😍'},{n:33,cap:'the vibe ⭐'},{n:49,cap:'glowing 💫'},
-    {n:52,cap:'perfection 💖'},{n:58,cap:'breathtaking 🩷'},{n:65,cap:'forever 💗'}
+    {n:52,cap:'perfection 💖'},{n:76,cap:'my world 🌸'},{n:58,cap:'breathtaking 🩷'},
+    {n:65,cap:'forever 💗'},{n:35,cap:'iconic 🌟'},{n:30,cap:'ethereal ✨'},
 ];
 const PHOTO_LAYOUT=[
-    {left:'3%', top:'13%',rot:-8, w:116},{left:'17%',top:'8%', rot:4,  w:112},{left:'30%',top:'13%',rot:-4,w:114},
-    {left:'68%',top:'8%', rot:6,  w:112},{left:'81%',top:'11%',rot:-7,w:116},
-    {left:'2%', top:'46%',rot:5,  w:112},{left:'17%',top:'50%',rot:-5,w:108},{left:'30%',top:'44%',rot:3, w:112},
-    {left:'68%',top:'46%',rot:5,  w:108},{left:'81%',top:'43%',rot:-6,w:112},
-    {left:'6%', top:'76%',rot:-6, w:108},{left:'79%',top:'75%',rot:6,  w:108}
+    {left:'0%', top:'18%',rot:-9, w:112},{left:'14%',top:'13%',rot:5,  w:106},{left:'26%',top:'19%',rot:-4,w:110},
+    {left:'61%',top:'14%',rot:6,  w:108},{left:'75%',top:'12%',rot:-7,w:112},{left:'85%',top:'17%',rot:4, w:108},
+    {left:'0%', top:'48%',rot:6,  w:110},{left:'14%',top:'52%',rot:-5,w:105},{left:'24%',top:'45%',rot:3, w:108},
+    {left:'63%',top:'50%',rot:5,  w:106},{left:'75%',top:'46%',rot:-6,w:110},{left:'85%',top:'52%',rot:4, w:107},
+    {left:'0%', top:'76%',rot:-7, w:110},{left:'14%',top:'80%',rot:6,  w:105},{left:'77%',top:'75%',rot:-6,w:108},
 ];
 const PIN_COLORS=['#d36b8f','#f9a825','#2980b9','#00b894','#c0392b','#c678dd','#e67e22'];
 const HEARTS=['💗','💕','💖','💓','🩷','💝','✨','🌸','⭐'];
@@ -542,17 +518,17 @@ function buildBoard(){
             pol.appendChild(w);
         }
         const img=document.createElement('img');
-        img.src=`photos/photo (${pd.n}).jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.style.cssText='display:block;width:100%;aspect-ratio:1/1;object-fit:cover;';
         img.onerror=()=>{ img.style.minHeight='80px'; img.style.background='#f0d0da'; };
         const cap=document.createElement('p'); cap.className='pol-cap'; cap.textContent=pd.cap;
         const hrt=document.createElement('div'); hrt.className='pol-heart'; hrt.textContent=HEARTS[idx%HEARTS.length];
         pol.append(pin,img,cap,hrt); wrap.appendChild(pol); scene.appendChild(wrap);
     });
-    [{bg:'#fff9c4',rot:-3,left:'39%',top:'26%',text:'seeing you feels like heaven must have dropped its best… 🌸'},
-     {bg:'#ffd6e8',rot:2, left:'54%',top:'25%',text:'calling you my bestfriend feels like showing off in front of the whole universe 💗'},
-     {bg:'#c8f7c5',rot:-2,left:'38%',top:'66%',text:'your chubby cheeks make you the cutest little kuchu-puchu bacha… and your hair flips? pure magic 😭💗'},
-     {bg:'#d6eaff',rot:3, left:'55%',top:'65%',text:'elegance in every little detail — like the universe took extra time just to get you right ✨'},
+    [{bg:'#fff9c4',rot:-3,left:'37%',top:'36%',text:'seeing you feels like heaven must have dropped its best... 🌸'},
+     {bg:'#ffd6e8',rot:2, left:'53%',top:'36%',text:'calling you my bestfriend feels like showing off in front of the whole universe 💗'},
+     {bg:'#c8f7c5',rot:-2,left:'37%',top:'68%',text:'your chubby cheeks make you the sweetest kuchu-puchu bacha 😭🔥'},
+     {bg:'#d6eaff',rot:3, left:'53%',top:'68%',text:'elegance in every curve — the universe shaped pure desire and called it you ✨'},
     ].forEach((nd,i)=>{
         const note=document.createElement('div'); note.className='sticky';
         note.style.cssText=`background:${nd.bg};transform:rotate(${nd.rot}deg);left:${nd.left};top:${nd.top};z-index:10;`;
@@ -569,7 +545,7 @@ function buildBoard(){
     const seal=document.createElement('div'); seal.className='env-seal'; seal.id='envSeal'; seal.textContent='💌';
     const hint=document.createElement('p'); hint.className='env-hint'; hint.textContent='tap to open';
     body.append(seal,hint); env.append(flap,body);
-    const lbl=document.createElement('p'); lbl.className='env-label'; lbl.textContent='only for your eyes 💗';
+    const lbl=document.createElement('p'); lbl.className='env-label'; lbl.textContent='pure facts 💗';
     envWrap.append(env,lbl); scene.appendChild(envWrap);
     [{e:'🎀',l:'40%',t:'13%',d:'0s',  s:'26px'},{e:'🌸',l:'91%',t:'14%',d:'.6s',s:'22px'},
      {e:'✨',l:'24%',t:'33%',d:'1.1s',s:'19px'},{e:'🌷',l:'75%',t:'33%',d:'1.7s',s:'21px'},
@@ -606,7 +582,7 @@ function confettiBurst(){
     const ctx=canvas.getContext('2d');
     canvas.width=window.innerWidth; canvas.height=window.innerHeight;
     const colors=['#f093b0','#d36b8f','#fce8f0','#ffb3cb','#fff0a0','#d4a056','#f9c74f','#e8c4ff','#ff9eb5','#c8f7c5','#ffd93d'];
-    const pieces=Array.from({length:88},()=>({
+    const pieces=Array.from({length:130},()=>({
         x:canvas.width*(.28+Math.random()*.44),y:canvas.height*.42,
         vx:(Math.random()-.5)*17,vy:(Math.random()-1.3)*13,
         color:colors[Math.floor(Math.random()*colors.length)],
@@ -641,7 +617,7 @@ document.getElementById('yesBtn').addEventListener('click',()=>{
     goTo('p1','p2',startTyping);
     setTimeout(()=>{
         goTo('p2','p3',()=>{ buildStarfield(); buildCdPhotos(); startCountdown(); confettiBurst(); });
-    },5600);
+    },6500);
 });
 
 document.getElementById('toBoard').addEventListener('click',()=>{
@@ -665,40 +641,17 @@ window.addEventListener('load',()=>{
    ✏️  DAILY NOTE — EDIT THIS EVERY DAY
    Just change the text between the backticks!
 ══════════════════════════════════════════════ */
-const DAILY_NOTE = `if i could pause time for a moment…
-it would be this one — right here — just so you could feel even a little of what i feel for you.
+const DAILY_NOTE = `today i just wanted to remind you that you are the most beautiful thing that has ever happened to me.
 
-because you… you are not something ordinary.
-you are not someone life gives twice.
-you are my princess, my favourite person, my first forever,
-and one of the rarest parts of my world.
+not just in the way you look — though that alone could make the whole world stop — but in the way you exist. the way you laugh at things only you find funny. the way your eyes carry something soft that i have never seen anywhere else.
 
-there is something about you that stays with me —
-your kindness, your softness, your strength,
-the way you make even ordinary moments feel warmer,
-and the way your presence alone can make everything feel a little lighter.
+i think about you more than you know. more than i say. more than i probably should. and i wouldn't change a single second of it.
 
-you have shaped me more than you know.
-the way i care, the way i notice little things,
-the way some moments matter so much more now —
-all of it changed, quietly, because of you.
+you deserve every good thing. every quiet moment. every big love. every beautiful day.
 
-and i need you to know this clearly:
-you are deeply loved, endlessly valued,
-and cared for more than i will probably ever explain perfectly.
+and on the days you forget that — come back here. read this. because this will always be true.
 
-you are beautiful, yes —
-but even more than that, you are comforting, precious, unforgettable,
-and so easy for my heart to be grateful for.
-
-if there ever comes a day where you doubt yourself,
-or forget how special you are,
-come back here… read this slowly…
-and remember that you are rare, you are enough,
-and you mean more to me than these words can fully hold.
-
-and i… i am just someone incredibly lucky
-that you exist in my world at all. 💗`;
+i love you. more than poems can hold. 💗`;
 
 
 /* ══════════════════════════════════════════════
@@ -713,15 +666,20 @@ function buildPoemPage(){
     // blurred bg photo — fills entire screen behind everything
     const bg=document.createElement('div');
     bg.className='poem-bg-photo';
-    bg.style.backgroundImage=`url('photos/photo (17).jpeg')`;
+    bg.style.backgroundImage=`url('photos/photo%20%2817%29.jpeg')`;
     page.appendChild(bg);
 
     // large portraits tucked behind the card, peeking from sides
     // positioned so they overlap the card edges — feels like memories tucked in
     const portraits=[
-        {n:38, w:148, h:188, left:'11%', top:'58%', rot:-10, del:'0s',  dur:'5.4s'},
-        {n:59, w:132, h:168, left:'75%', top:'10%', rot:9,   del:'0.5s',dur:'4.8s'},
-        {n:21, w:104, h:132, left:'6%',  top:'10%', rot:-7,  del:'0.3s',dur:'4.6s'},
+        // big one peeking from bottom-left behind card
+        {n:38, w:160, h:200, left:'12%', top:'55%', rot:-12, del:'0s',  dur:'5s'},
+        // peeking from top-right
+        {n:59, w:140, h:175, left:'72%', top:'8%',  rot:10,  del:'0.6s',dur:'4.5s'},
+        // small one bottom-right corner
+        {n:11, w:120, h:150, left:'78%', top:'62%', rot:6,   del:'1.1s',dur:'5.5s'},
+        // small peeking top-left
+        {n:21, w:110, h:138, left:'5%',  top:'5%',  rot:-8,  del:'0.3s',dur:'4.8s'},
     ];
 
     portraits.forEach(pd=>{
@@ -729,7 +687,7 @@ function buildPoemPage(){
         wrap.className='poem-portrait';
         wrap.style.cssText=`left:${pd.left};top:${pd.top};width:${pd.w}px;--rot:${pd.rot}deg;animation-delay:${pd.del};animation-duration:${pd.dur};`;
         const img=document.createElement('img');
-        img.src=`photos/photo (${pd.n}).jpeg`; img.alt='';
+        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt='';
         img.style.cssText=`width:${pd.w}px;height:${pd.h}px;object-fit:cover;`;
         img.loading='lazy'; img.onerror=()=>{ wrap.style.display='none'; };
         wrap.appendChild(img); page.appendChild(wrap);
@@ -788,11 +746,11 @@ function buildNotePage(){
                 body.appendChild(span);
             }
             // faster for spaces/common chars, slight pause on punctuation
-            const delay='…'.includes(ch)?140:'.?!,'.includes(ch)?95:ch==='\n'?85:ch===' '?24:20;
+            const delay='.?!,'.includes(ch)?120:ch==='\n'?80:22;
             setTimeout(nextChar,delay);
         }
         // small delay before starting so page is visible
-        setTimeout(nextChar,600);
+        setTimeout(nextChar,400);
     }
 }
 
@@ -817,4 +775,3 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     }
 });
-
