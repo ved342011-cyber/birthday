@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>for my bby 💗</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,300;1,6..96,400;1,6..96,600&family=Great+Vibes&family=IM+Fell+English:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=Caveat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- EYE BLINK TRANSITION -->
+<div id="eyeBlink" class="eye-blink">
+    <img src="photos/photo (32).jpeg" class="blink-eye-img" alt="">
+    <div class="blink-lid blink-top"></div>
+    <div class="blink-lid blink-bot"></div>
+</div>
+
+<!-- INTRO SCREEN -->
+<div id="introScreen" class="intro-screen">
+    <img src="photos/photo (32).jpeg" alt="" class="intro-photo">
+    <div class="intro-veil"></div>
+    <div class="intro-words">
+        <p class="intro-main">stay here for a second…</p>
+        <p class="intro-sub">there's something waiting for you, made with all my heart 💗</p>
+    </div>
+    <p class="intro-tap">✦ &nbsp; tap anywhere to begin &nbsp; ✦</p>
+</div>
+
+<!-- global layers -->
+<div id="particleLayer" class="g-particles"></div>
+<div id="sparkleLayer"  class="g-sparkles"></div>
+<canvas id="confetti"></canvas>
+
+<!-- PAGE 1 · WELCOME -->
+<section id="p1" class="page">
+    <div class="p1-vignette"></div>
+    <div id="roseRain" class="rose-rain"></div>
+    <div class="p1-inner">
+        <p class="eyebrow">✦ &nbsp; made with more love than words can hold &nbsp; ✦</p>
+        <h1 id="mainTitle" class="hero-title">
+            <span class="title-main">hey my</span>
+            <span class="title-baby">baby 💗</span>
+        </h1>
+        <p class="hero-accent">are you ready for something i made only for you?</p>
+        <div class="hero-btns">
+            <button id="yesBtn" class="btn-yes">yes, show me 🥰</button>
+            <button id="noBtn"  class="btn-no">let me think 😶</button>
+        </div>
+        <p id="noMsg" class="no-msg" aria-live="polite"></p>
+    </div>
+</section>
+
+<!-- PAGE 2 · LOADING -->
+<section id="p2" class="page">
+    <div id="sakuraLayer" class="sakura-layer"></div>
+    <div class="load-wrap">
+        <div class="kitty-frame">
+            <img src="kitty.gif" alt="" class="kitty">
+            <div class="kitty-glow"></div>
+        </div>
+        <p class="load-line">
+            <span id="typeText"></span><span class="caret">|</span>
+        </p>
+        <div class="load-dots">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</section>
+
+<!-- PAGE 3 · COUNTDOWN -->
+<section id="p3" class="page">
+    <div id="starfield" class="starfield"></div>
+    <div class="cd-eye-bg"></div>
+    <div id="reelTop" class="cd-reel cd-reel-top"><div class="cd-reel-strip" id="reelTopStrip"></div></div>
+    <div id="reelBot" class="cd-reel cd-reel-bot"><div class="cd-reel-strip" id="reelBotStrip"></div></div>
+    <div class="cd-card">
+        <span class="cd-crown">👑</span>
+        <h2 class="cd-heading">oh, my princess ✨</h2>
+        <div class="cd-timer">
+            <div class="cd-unit"><b id="cd-d">00</b><span>Days</span></div>
+            <div class="cd-colon">:</div>
+            <div class="cd-unit"><b id="cd-h">00</b><span>Hours</span></div>
+            <div class="cd-colon">:</div>
+            <div class="cd-unit"><b id="cd-m">00</b><span>Mins</span></div>
+            <div class="cd-colon">:</div>
+            <div class="cd-unit cd-pulse"><b id="cd-s">00</b><span>Secs</span></div>
+        </div>
+        <p class="cd-caption">the day is coming when my favourite person came into this world 💗</p>
+        <button id="toBoard" class="btn-yes cd-btn">come see the little memories ✨</button>
+    </div>
+</section>
+
+<!-- PAGE 4 · CORKBOARD -->
+<section id="p4" class="page board-page">
+    <div id="petalLayer" class="petal-layer"></div>
+    <div id="lightsRow"  class="lights-row"></div>
+    <div id="bunting"    class="bunting"></div>
+    <div id="boardScene" class="board-scene"></div>
+    <button id="toPoem" class="nav-next-btn">read something i wrote for you ✦</button>
+</section>
+
+<!-- PAGE 5 · POEM -->
+<section id="p5" class="page poem-page">
+    <div class="parch-texture"></div>
+    <div class="parch-vignette"></div>
+    <div id="candleLayer" class="candle-layer"></div>
+    <div class="poem-scroll">
+        <div class="poem-card">
+            <div class="poem-flourish top-flourish">❧</div>
+            <p class="poem-label">✦ &nbsp; for you &nbsp; ✦</p>
+            <h2 class="poem-title">the way you exist</h2>
+            <div class="poem-divider">— ✦ —</div>
+            <div class="poem-body">
+                <p>before i knew your name,<br>the universe was practising —<br>perfecting the curve of a smile<br>it had been saving just for you.</p>
+                <p>you are not the kind of beautiful<br>that simply passes through a room.<br>you are the kind that makes a room<br>forget it ever existed before you.</p>
+                <p>i have tried to find the words<br>but language was not made<br>for things this rare —<br>only silence comes close,<br>and even silence falls short.</p>
+                <p>if the stars knew<br>what they were competing with,<br>they would have stopped trying<br>a long time ago.</p>
+                <p>and i —<br>i am just someone<br>lucky enough to witness<br>what even the sky cannot contain.</p>
+                <p class="poem-sign">— with everything i have, always.</p>
+            </div>
+            <div class="poem-divider">— ✦ —</div>
+            <div class="poem-flourish bot-flourish">❧</div>
+        </div>
+        <button id="toNote" class="nav-next-btn poem-next-btn">one more thing for you ✦</button>
+    </div>
+</section>
+
+<!-- PAGE 6 · DAILY NOTE -->
+<section id="p6" class="page note-page">
+    <div class="note-bg-layer"></div>
+    <div class="note-scroll">
+        <div class="note-card">
+            <div class="note-wax">💌</div>
+            <p class="note-eyebrow">✦ &nbsp; a note from vedu &nbsp; ✦</p>
+            <p id="noteDate" class="note-date"></p>
+            <div class="note-divider"></div>
+            <div id="noteBody" class="note-body"></div>
+            <div class="note-divider"></div>
+            <p class="note-sign">yours, always 💗</p>
+        </div>
+        <p class="note-footer">written softly, meant honestly 🌹</p>
+    </div>
+</section>
+
+<!-- LETTER MODAL -->
+<div id="modal" class="modal" onclick="if(event.target===this)closeLetter()">
+    <div class="modal-paper">
+        <button class="modal-x" onclick="closeLetter()">✕</button>
+        <p class="modal-roses">🌹 &nbsp; 🌹</p>
+        <p class="modal-orn">✦ &nbsp; ✦ &nbsp; ✦</p>
+        <p class="letter-p">If you could borrow my eyes for even a moment, you would see what I see so easily — a kind of beauty no mirror has ever fully held. You are not just beautiful... you are the kind of breath-stealing, heart-softening beauty that refuses to fit into ordinary words.</p>
+        <p class="letter-p">And yet, the real brilliance in you — the extra light that makes you unlike anyone else — is your soul. The quiet kindness you carry, the purity in your heart, the way your love feels gentle and human and warm... that is what makes you the most admirable person I have ever known.</p>
+        <p class="letter-p">To admire you is effortless, because you are stunning in every way a person can be, but even the sweetest compliments feel too small for you. Your beauty isn't only in your face or your figure, though both could stop the world for a second... it's in the depth of your soul, the goodness you breathe into every moment, the softness only I am lucky enough to feel this closely.</p>
+        <p class="letter-p letter-final">And bby, no one — not in this lifetime or any other — could ever hold you in quite the same place my heart does. 💗</p>
+        <p class="modal-orn">✦ &nbsp; ✦ &nbsp; ✦</p>
+        <p class="modal-sign">with all my heart 💌</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
