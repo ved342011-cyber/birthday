@@ -159,7 +159,7 @@ function spawnP1Photos(){
         frame.style.cssText=`width:${fd.w}px;height:${fd.h}px;`;
 
         const img=document.createElement('img');
-        img.src=`photos/photo%20%28${fd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photo%20%28${fd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.style.cssText=`width:${fd.w-8}px;height:${fd.h-8}px;object-fit:cover;display:block;`;
         img.onerror=()=>{ wrap.style.display='none'; };
 
@@ -237,7 +237,7 @@ function spawnP2Decor(){
         const card=document.createElement('div'); card.className='instax';
         card.style.cssText=`width:${pd.w}px;`;
         const img=document.createElement('img');
-        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.onerror=()=>{ wrap.style.display='none'; };
         const cap=document.createElement('div'); cap.className='scap'; cap.textContent=pd.cap;
         card.append(img,cap); wrap.appendChild(card); page.appendChild(wrap);
@@ -295,7 +295,7 @@ function buildCdPhotos(){
             const frame=document.createElement('div');
             frame.className='cd-film-frame';
             const img=document.createElement('img');
-            img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
+            img.src=`photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
             img.style.cssText=`width:${h}px;height:${h}px;`;
             img.onerror=()=>{ frame.style.display='none'; };
             frame.appendChild(img); strip.appendChild(frame);
@@ -518,7 +518,7 @@ function buildBoard(){
             pol.appendChild(w);
         }
         const img=document.createElement('img');
-        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
+        img.src=`photo%20%28${pd.n}%29.jpeg`; img.alt=''; img.loading='lazy';
         img.style.cssText='display:block;width:100%;aspect-ratio:1/1;object-fit:cover;';
         img.onerror=()=>{ img.style.minHeight='80px'; img.style.background='#f0d0da'; };
         const cap=document.createElement('p'); cap.className='pol-cap'; cap.textContent=pd.cap;
@@ -666,7 +666,7 @@ function buildPoemPage(){
     // blurred bg photo — fills entire screen behind everything
     const bg=document.createElement('div');
     bg.className='poem-bg-photo';
-    bg.style.backgroundImage=`url('photos/photo%20%2817%29.jpeg')`;
+    bg.style.backgroundImage=`url('photo%20%2817%29.jpeg')`;
     page.appendChild(bg);
 
     // large portraits tucked behind the card, peeking from sides
@@ -687,7 +687,7 @@ function buildPoemPage(){
         wrap.className='poem-portrait';
         wrap.style.cssText=`left:${pd.left};top:${pd.top};width:${pd.w}px;--rot:${pd.rot}deg;animation-delay:${pd.del};animation-duration:${pd.dur};`;
         const img=document.createElement('img');
-        img.src=`photos/photo%20%28${pd.n}%29.jpeg`; img.alt='';
+        img.src=`photo%20%28${pd.n}%29.jpeg`; img.alt='';
         img.style.cssText=`width:${pd.w}px;height:${pd.h}px;object-fit:cover;`;
         img.loading='lazy'; img.onerror=()=>{ wrap.style.display='none'; };
         wrap.appendChild(img); page.appendChild(wrap);
@@ -775,3 +775,4 @@ document.addEventListener('DOMContentLoaded',()=>{
         });
     }
 });
+
