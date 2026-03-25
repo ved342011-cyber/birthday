@@ -655,6 +655,155 @@ i love you. more than poems can hold. 💗`;
 
 
 /* ══════════════════════════════════════════════
+   GRATITUDE MUSEUM DATA · P7 / P8 / P9 / P10
+══════════════════════════════════════════════ */
+const HALLWAY_PHOTOS = [7, 14, 22, 31, 47, 52, 68, 74];
+
+const GRATITUDE_EXHIBITS = [
+    {
+        tag: 'EXHIBIT I',
+        title: 'For the peace',
+        photo: 11,
+        text: `There are people who brighten a room,
+and then there are people who quiet the noise inside a heart.
+You became that kind of presence for me —
+the kind that did not need to do anything dramatic
+to make life feel softer, safer, kinder.
+Somehow, simply having you near
+made heaviness loosen its grip.
+That peace was never small.
+I still carry it.`
+    },
+    {
+        tag: 'EXHIBIT II',
+        title: 'For the little things you never noticed',
+        photo: 27,
+        text: `Maybe you never knew how much stayed.
+The passing words, the ordinary jokes,
+the tiny habits, the smallest gestures,
+the way a moment could become unforgettable
+just because your presence had touched it.
+So much of what mattered most
+arrived quietly, almost invisibly —
+and maybe that is why it lives so deeply in me.
+You left more than you ever meant to.`
+    },
+    {
+        tag: 'EXHIBIT III',
+        title: 'For the happiness attached to your name',
+        photo: 34,
+        text: `There are names people hear,
+and then there are names people feel.
+Yours became warmth in my life.
+It began to sound like comfort,
+like lightness, like something my heart trusted.
+Even on ordinary days,
+your name carried a kind of brightness with it.
+That is not a small thing.
+That is the kind of thing people remember for years.`
+    },
+    {
+        tag: 'EXHIBIT IV',
+        title: 'For the version of me that existed around you',
+        photo: 49,
+        text: `Because of you,
+there were versions of me that felt lighter,
+gentler, more awake to joy.
+Around your presence,
+something in me softened without fear.
+I laughed more honestly.
+I noticed beauty more carefully.
+I held moments closer.
+And maybe that is one of the quietest miracles of all —
+that someone can enter your life
+and change the atmosphere inside you.`
+    },
+    {
+        tag: 'EXHIBIT V',
+        title: 'For being more than words can hold',
+        photo: 58,
+        text: `Even after all these rooms,
+language still feels smaller than what I owe your presence.
+Some people are remembered.
+Some people are missed.
+But some people become woven into
+the meaning of beautiful days themselves.
+That is what you became.
+And gratitude is still too little a word,
+yet it is the one my heart keeps returning to,
+because it still needs some name
+for all that it carries when it thinks of you.`
+    }
+];
+
+function playDoorOpen(){
+    tone(165,.18,'sawtooth',.055);
+    setTimeout(()=>tone(122,.34,'triangle',.05),90);
+    setTimeout(()=>tone(420,.26,'sine',.04),250);
+}
+
+function buildHallway(){
+    const wrap=document.getElementById('hallFrames');
+    if(!wrap || wrap.dataset.built) return;
+    wrap.dataset.built='1';
+
+    const topSlots=[10,24,42,60,14,32,50,68];
+
+    HALLWAY_PHOTOS.forEach((n,i)=>{
+        const frame=document.createElement('div');
+        frame.className=`hall-frame ${i % 2 === 0 ? 'left' : 'right'}`;
+        frame.style.top=`${topSlots[i]}%`;
+        frame.style.animationDelay=`${i * 0.18}s`;
+
+        const img=document.createElement('img');
+        img.src=`photo%20%28${n}%29.jpeg`;
+        img.alt='';
+        img.loading='lazy';
+        img.onerror=()=>{ frame.style.display='none'; };
+
+        frame.appendChild(img);
+        wrap.appendChild(frame);
+    });
+}
+
+function buildMuseumPage(){
+    const page=document.getElementById('p10');
+    const holder=document.getElementById('museumExhibits');
+    if(!page || !holder || page.dataset.built) return;
+
+    page.dataset.built='1';
+    holder.innerHTML='';
+
+    GRATITUDE_EXHIBITS.forEach((ex)=>{
+        const card=document.createElement('article');
+        card.className='museum-exhibit';
+        card.innerHTML=`
+            <div class="museum-exhibit-copy">
+                <p class="museum-exhibit-tag">${ex.tag}</p>
+                <h3 class="museum-exhibit-title">${ex.title}</h3>
+                <div class="museum-exhibit-text">${ex.text}</div>
+            </div>
+            <div class="museum-exhibit-photo">
+                <img src="photo%20%28${ex.photo}%29.jpeg" alt="">
+            </div>
+        `;
+        holder.appendChild(card);
+    });
+
+    const reveal=new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+            if(entry.isIntersecting){
+                entry.target.classList.add('show');
+                reveal.unobserve(entry.target);
+            }
+        });
+    }, { threshold:.16 });
+
+    holder.querySelectorAll('.museum-exhibit').forEach(card=>reveal.observe(card));
+}
+
+
+/* ══════════════════════════════════════════════
    PAGE 5 · POEM SETUP
 ══════════════════════════════════════════════ */
 function buildPoemPage(){
@@ -774,5 +923,38 @@ document.addEventListener('DOMContentLoaded',()=>{
             goTo('p5','p6',()=>{ buildNotePage(); });
         });
     }
-});
 
+    const toMuseumIntro=document.getElementById('toMuseumIntro');
+    if(toMuseumIntro){
+        toMuseumIntro.addEventListener('click',()=>{
+            playChime();
+            goTo('p6','p7');
+            setTimeout(()=>{
+                goTo('p7','p8');
+            },4700);
+        });
+    }
+
+    const museumDoor=document.getElementById('museumDoor');
+    if(museumDoor){
+        museumDoor.addEventListener('click',()=>{
+            if(museumDoor.dataset.busy) return;
+            museumDoor.dataset.busy='1';
+
+            playDoorOpen();
+            museumDoor.classList.add('opening');
+
+            setTimeout(()=>{
+                goTo('p8','p9',()=>{
+                    buildHallway();
+
+                    setTimeout(()=>{
+                        goTo('p9','p10',()=>{
+                            buildMuseumPage();
+                        });
+                    },4300);
+                });
+            },900);
+        });
+    }
+});
