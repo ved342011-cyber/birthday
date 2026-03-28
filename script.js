@@ -736,29 +736,185 @@ for all that it carries when it thinks of you.`
     }
 ];
 
+
 function playDoorOpen(){
-    tone(165,.18,'sawtooth',.055);
-    setTimeout(()=>tone(122,.34,'triangle',.05),90);
-    setTimeout(()=>tone(420,.26,'sine',.04),250);
+    tone(148,.20,'triangle',.05);
+    setTimeout(()=>tone(196,.32,'sine',.038),110);
+    setTimeout(()=>tone(247,.52,'sine',.032),250);
+    setTimeout(()=>tone(330,.74,'triangle',.024),360);
+}
+
+function playDoorFile(){
+    const el = document.getElementById('doorOpenAudio');
+    if(!el) return;
+    try {
+        el.currentTime = 0;
+        const p = el.play();
+        if(p && typeof p.catch === 'function') p.catch(()=>{});
+    } catch(_err){}
+}
+
+const MUSEUM_TRANSITION_MS = 5900;
+const DOOR_OPEN_MS = 1320;
+const HALLWAY_TRAVEL_MS = 6200;
+
+let hallAmbience = null;
+
+function stopHallAmbience(fadeMs = 600){
+    if(!hallAmbience) return;
+    const state = hallAmbience;
+    hallAmbience = null;
+    try {
+        const t = audio.currentTime;
+        state.master.gain.cancelScheduledValues(t);
+        state.master.gain.setValueAtTime(state.master.gain.value || 0.03, t);
+        state.master.gain.linearRampToValueAtTime(0.0001, t + fadeMs / 1000);
+    } catch(_err){}
+    clearInterval(state.stepTimer);
+    state.extraStops.forEach(fn=>{
+        try { fn(); } catch(_err){}
+    });
+    setTimeout(()=>{
+        try { state.master.disconnect(); } catch(_err){}
+    }, fadeMs + 120);
+}
+
+function startHallAmbience(){
+    stopHallAmbience(260);
+    if(audio.state === 'suspended') return;
+
+    const master = audio.createGain();
+    master.gain.value = 0.0001;
+    master.connect(audio.destination);
+
+    const now = audio.currentTime;
+    master.gain.setValueAtTime(0.0001, now);
+    master.gain.linearRampToValueAtTime(0.026, now + 0.7);
+
+    const noiseBuffer = audio.createBuffer(1, audio.sampleRate * 2, audio.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for(let i=0;i<data.length;i++){
+        data[i] = (Math.random() * 2 - 1) * 0.26;
+    }
+
+    const airy = audio.createBufferSource();
+    airy.buffer = noiseBuffer;
+    airy.loop = true;
+    const airyFilter = audio.createBiquadFilter();
+    airyFilter.type = 'bandpass';
+    airyFilter.frequency.value = 880;
+    airyFilter.Q.value = 0.8;
+    const airyGain = audio.createGain();
+    airyGain.gain.value = 0.010;
+    airy.connect(airyFilter);
+    airyFilter.connect(airyGain);
+    airyGain.connect(master);
+    airy.start();
+
+    const hush = audio.createOscillator();
+    hush.type = 'sine';
+    hush.frequency.value = 132;
+    const hushGain = audio.createGain();
+    hushGain.gain.value = 0.0032;
+    hush.connect(hushGain);
+    hushGain.connect(master);
+    hush.start();
+
+    let stepIndex = 0;
+    const stepTimer = setInterval(()=>{
+        if(audio.state === 'suspended') return;
+        const t = audio.currentTime;
+        const pan = (stepIndex % 2 === 0) ? -0.08 : 0.08;
+        const stepNoise = audio.createBufferSource();
+        stepNoise.buffer = noiseBuffer;
+        const stepFilter = audio.createBiquadFilter();
+        stepFilter.type = 'lowpass';
+        stepFilter.frequency.value = 240;
+        const stepGain = audio.createGain();
+        stepGain.gain.setValueAtTime(0.0001, t);
+        stepGain.gain.linearRampToValueAtTime(0.017, t + 0.045);
+        stepGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+        let stepPan;
+        if(audio.createStereoPanner){
+            stepPan = audio.createStereoPanner();
+            stepPan.pan.value = pan;
+        }
+        stepNoise.connect(stepFilter);
+        stepFilter.connect(stepGain);
+        if(stepPan){
+            stepGain.connect(stepPan);
+            stepPan.connect(master);
+        } else {
+            stepGain.connect(master);
+        }
+        stepNoise.start(t);
+        stepNoise.stop(t + 0.3);
+
+        const footTone = audio.createOscillator();
+        footTone.type = 'triangle';
+        footTone.frequency.setValueAtTime(stepIndex % 2 === 0 ? 104 : 96, t);
+        const footGain = audio.createGain();
+        footGain.gain.setValueAtTime(0.0001, t);
+        footGain.gain.linearRampToValueAtTime(0.010, t + 0.035);
+        footGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.24);
+        if(stepPan){
+            footTone.connect(footGain);
+            footGain.connect(stepPan);
+        } else {
+            footTone.connect(footGain);
+            footGain.connect(master);
+        }
+        footTone.start(t);
+        footTone.stop(t + 0.25);
+        stepIndex += 1;
+    }, 620);
+
+    hallAmbience = {
+        master,
+        stepTimer,
+        extraStops: [
+            ()=>{ try { airy.stop(); } catch(_err){} },
+            ()=>{ try { hush.stop(); } catch(_err){} }
+        ]
+    };
 }
 
 function buildHallway(){
+    const page=document.getElementById('p9');
     const wrap=document.getElementById('hallFrames');
-    if(!wrap || wrap.dataset.built) return;
+    if(!page || !wrap || wrap.dataset.built) return;
+
     wrap.dataset.built='1';
+    wrap.innerHTML='';
 
-    const topSlots=[10,24,42,60,14,32,50,68];
+    const sequence=[
+        { photo:HALLWAY_PHOTOS[0], side:'left',  y:'-24vh', x:'31vw', rot:'-8deg', zStart:'-1540px', zEnd:'480px', dur:5.9, delay:.10, cls:'' },
+        { photo:HALLWAY_PHOTOS[1], side:'right', y:'-22vh', x:'31vw', rot:'8deg',  zStart:'-1480px', zEnd:'500px', dur:5.9, delay:.36, cls:'' },
+        { photo:HALLWAY_PHOTOS[2], side:'left',  y:'-7vh',  x:'35vw', rot:'-6deg', zStart:'-1240px', zEnd:'540px', dur:5.55, delay:1.00, cls:'' },
+        { photo:HALLWAY_PHOTOS[3], side:'right', y:'-4vh',  x:'35vw', rot:'7deg',  zStart:'-1180px', zEnd:'560px', dur:5.55, delay:1.28, cls:'' },
+        { photo:HALLWAY_PHOTOS[4], side:'left',  y:'9vh',   x:'28vw', rot:'-5deg', zStart:'-980px',  zEnd:'620px', dur:5.10, delay:2.15, cls:'foreground' },
+        { photo:HALLWAY_PHOTOS[5], side:'right', y:'11vh',  x:'28vw', rot:'5deg',  zStart:'-920px',  zEnd:'620px', dur:5.10, delay:2.42, cls:'foreground' },
+        { photo:HALLWAY_PHOTOS[6], side:'left',  y:'22vh',  x:'33vw', rot:'-4deg', zStart:'-780px',  zEnd:'660px', dur:4.70, delay:3.22, cls:'foreground' },
+        { photo:HALLWAY_PHOTOS[7], side:'right', y:'24vh',  x:'33vw', rot:'4deg',  zStart:'-740px',  zEnd:'660px', dur:4.70, delay:3.48, cls:'foreground' }
+    ];
 
-    HALLWAY_PHOTOS.forEach((n,i)=>{
+    sequence.forEach((cfg,i)=>{
         const frame=document.createElement('div');
-        frame.className=`hall-frame ${i % 2 === 0 ? 'left' : 'right'}`;
-        frame.style.top=`${topSlots[i]}%`;
-        frame.style.animationDelay=`${i * 0.18}s`;
+        frame.className=`hall-frame ${cfg.side} ${cfg.cls || ''}`.trim();
+        frame.style.setProperty('--x', cfg.x);
+        frame.style.setProperty('--y', cfg.y);
+        frame.style.setProperty('--rot', cfg.rot);
+        frame.style.setProperty('--z-start', cfg.zStart);
+        frame.style.setProperty('--z-end', cfg.zEnd);
+        frame.style.setProperty('--dur', `${cfg.dur}s`);
+        frame.style.animationDelay=`${cfg.delay}s`;
+        frame.style.zIndex=String(12 + i);
 
         const img=document.createElement('img');
-        img.src=`photo%20%28${n}%29.jpeg`;
+        img.src=`photo%20%28${cfg.photo}%29.jpeg`;
         img.alt='';
         img.loading='lazy';
+        img.decoding='async';
         img.onerror=()=>{ frame.style.display='none'; };
 
         frame.appendChild(img);
@@ -774,9 +930,10 @@ function buildMuseumPage(){
     page.dataset.built='1';
     holder.innerHTML='';
 
-    GRATITUDE_EXHIBITS.forEach((ex)=>{
+    GRATITUDE_EXHIBITS.forEach((ex, i)=>{
         const card=document.createElement('article');
         card.className='museum-exhibit';
+        card.style.setProperty('--reveal-delay', `${i * 0.08}s`);
         card.innerHTML=`
             <div class="museum-exhibit-copy">
                 <p class="museum-exhibit-tag">${ex.tag}</p>
@@ -784,9 +941,16 @@ function buildMuseumPage(){
                 <div class="museum-exhibit-text">${ex.text}</div>
             </div>
             <div class="museum-exhibit-photo">
-                <img src="photo%20%28${ex.photo}%29.jpeg" alt="">
+                <img src="photo%20%28${ex.photo}%29.jpeg" alt="" loading="lazy" decoding="async">
             </div>
         `;
+        const img=card.querySelector('img');
+        if(img){
+            img.onerror=()=>{
+                const box = img.closest('.museum-exhibit-photo');
+                if(box) box.style.display='none';
+            };
+        }
         holder.appendChild(card);
     });
 
@@ -797,7 +961,7 @@ function buildMuseumPage(){
                 reveal.unobserve(entry.target);
             }
         });
-    }, { threshold:.16 });
+    }, { threshold:.16, rootMargin:'0px 0px -6% 0px' });
 
     holder.querySelectorAll('.museum-exhibit').forEach(card=>reveal.observe(card));
 }
@@ -927,11 +1091,12 @@ document.addEventListener('DOMContentLoaded',()=>{
     const toMuseumIntro=document.getElementById('toMuseumIntro');
     if(toMuseumIntro){
         toMuseumIntro.addEventListener('click',()=>{
+            if(audio.state==='suspended') audio.resume().catch(()=>{});
             playChime();
             goTo('p6','p7');
             setTimeout(()=>{
                 goTo('p7','p8');
-            },4700);
+            },MUSEUM_TRANSITION_MS);
         });
     }
 
@@ -940,21 +1105,25 @@ document.addEventListener('DOMContentLoaded',()=>{
         museumDoor.addEventListener('click',()=>{
             if(museumDoor.dataset.busy) return;
             museumDoor.dataset.busy='1';
+            if(audio.state==='suspended') audio.resume().catch(()=>{});
 
             playDoorOpen();
+            playDoorFile();
             museumDoor.classList.add('opening');
 
             setTimeout(()=>{
                 goTo('p8','p9',()=>{
                     buildHallway();
+                    startHallAmbience();
 
                     setTimeout(()=>{
+                        stopHallAmbience(950);
                         goTo('p9','p10',()=>{
                             buildMuseumPage();
                         });
-                    },4300);
+                    },HALLWAY_TRAVEL_MS);
                 });
-            },900);
+            },DOOR_OPEN_MS);
         });
     }
 });
